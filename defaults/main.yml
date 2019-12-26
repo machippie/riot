@@ -1,0 +1,10 @@
+# Standards: 0.1
+---
+# @var riot_user:description: User to run user-specific commands
+# @var riot_user:value: riot_user | default(homebrew_user) | default(ansible_user_id)
+# riot_user:
+
+# @var riot_started:description: Restart app if already running
+riot_started: True
+
+...
