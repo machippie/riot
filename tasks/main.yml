@@ -1,0 +1,38 @@
+# Standards: 0.1
+---
+- name: Fact riot user
+  set_fact:
+    riot_user: "{{ riot_user | default(homebrew_user) | default(ansible_user_id) }}"
+  tags:
+    - riot
+
+- become: "{{ (riot_user != ansible_user_id) | bool }}"
+  become_user: "{{ riot_user }}"
+  block:
+    - name: Install required package
+      ignore_errors: True
+      homebrew_cask:
+        name: riot
+        greedy: True
+        options: appdir=/Applications
+        accept_external_apps: False
+        state: upgraded
+      tags:
+        - riot
+
+    - name: Remove quarantine flag
+      register: riot_quarantine
+      failed_when: riot_quarantine.rc != 0 and "No such xattr" not in riot_quarantine.stderr
+      changed_when: riot_quarantine.rc == 0
+      command: xattr -d com.apple.quarantine /Applications/Riot.app
+      tags:
+        - riot
+
+    - name: Start application
+      when: riot_started
+      changed_when: False
+      command: open -j /Applications/Riot.app
+      tags:
+        - riot
+
+...
