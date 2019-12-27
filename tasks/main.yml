@@ -28,23 +28,10 @@
       tags:
         - riot
 
-    - name: Install pidof package
-      homebrew:
-        name: pidof
-      tags:
-        - riot
-
-    - name: Check program running
-      register: riot_running
-      failed_when: False
-      changed_when: riot_running.stdout | length > 0 | bool
-      command: pidof Riot
-      tags:
-        - riot
-
-    - name: Fact program running
-      set_fact:
-        riot_started: "{{ riot_running.stdout_lines | length > 0 | bool }}"
+    - name: Start application
+      when: riot_started
+      changed_when: False
+      command: open -j /Applications/Riot.app
       tags:
         - riot
 
